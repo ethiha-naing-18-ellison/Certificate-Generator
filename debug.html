@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Certificate Generator - Debug</title>
+    <style>
+        body { font-family: Arial, sans-serif; padding: 20px; }
+        .test { margin: 20px 0; padding: 15px; border: 1px solid #ccc; border-radius: 5px; }
+        .success { background: #d4edda; border-color: #c3e6cb; }
+        .error { background: #f8d7da; border-color: #f5c6cb; }
+        button { padding: 10px 20px; margin: 5px; cursor: pointer; }
+    </style>
+</head>
+<body>
+    <h1>Certificate Generator - Debug & Test</h1>
+    
+    <div class="test">
+        <h3>Library Loading Status</h3>
+        <div id="library-status"></div>
+    </div>
+    
+    <div class="test">
+        <h3>Quick Tests</h3>
+        <button onclick="testFileUpload()">Test File Upload</button>
+        <button onclick="testSignaturePad()">Test Signature Pad</button>
+        <button onclick="testDownload()">Test Download</button>
+        <button onclick="testQRCode()">Test QR Code</button>
+    </div>
+    
+    <div class="test">
+        <h3>Test Results</h3>
+        <div id="test-results"></div>
+    </div>
+
+    <!-- Include same libraries as main app -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/qrcode/1.5.3/qrcode.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/signature_pad/4.1.7/signature_pad.umd.min.js"></script>
+
+    <script>
+        function checkLibraries() {
+            const libraries = [
+                { name: 'html2canvas', loaded: typeof html2canvas !== 'undefined' },
+                { name: 'jsPDF', loaded: typeof window.jspdf !== 'undefined' },
+                { name: 'QRCode', loaded: typeof QRCode !== 'undefined' },
+                { name: 'SignaturePad', loaded: typeof SignaturePad !== 'undefined' }
+            ];
+            
+            const statusDiv = document.getElementById('library-status');
+            statusDiv.innerHTML = '';
+            
+            libraries.forEach(lib => {
+                const status = lib.loaded ? '✅' : '❌';
+                const color = lib.loaded ? 'green' : 'red';
+                statusDiv.innerHTML += `<p style="color: ${color}">${status} ${lib.name}</p>`;
+            });
+            
+            return libraries.every(lib => lib.loaded);
+        }
+        
+        function addResult(test, success, message) {
+            const resultsDiv = document.getElementById('test-results');
+            const className = success ? 'success' : 'error';
+            const status = success ? '✅' : '❌';
+            resultsDiv.innerHTML += `<div class="${className}"><strong>${status} ${test}:</strong> ${message}</div>`;
+        }
+        
+        function testFileUpload() {
+            try {
+                const input = document.createElement('input');
+                input.type = 'file';
+                input.accept = 'image/*';
+                input.click();
+                addResult('File Upload', true, 'File input created and clicked successfully');
+            } catch (error) {
+                addResult('File Upload', false, error.message);
+            }
+        }
+        
+        function testSignaturePad() {
+            try {
+                if (typeof SignaturePad === 'undefined') {
+                    throw new Error('SignaturePad library not loaded');
+                }
+                
+                const canvas = document.createElement('canvas');
+                canvas.width = 400;
+                canvas.height = 200;
+                document.body.appendChild(canvas);
+                
+                const pad = new SignaturePad(canvas);
+                addResult('Signature Pad', true, 'SignaturePad created successfully');
+                
+                setTimeout(() => {
+                    document.body.removeChild(canvas);
+                }, 2000);
+            } catch (error) {
+                addResult('Signature Pad', false, error.message);
+            }
+        }
+        
+        function testDownload() {
+            try {
+                if (typeof html2canvas === 'undefined') {
+                    throw new Error('html2canvas library not loaded');
+                }
+                
+                if (typeof window.jspdf === 'undefined') {
+                    throw new Error('jsPDF library not loaded');
+                }
+                
+                addResult('Download Libraries', true, 'Both html2canvas and jsPDF are loaded');
+            } catch (error) {
+                addResult('Download Libraries', false, error.message);
+            }
+        }
+        
+        function testQRCode() {
+            try {
+                if (typeof QRCode === 'undefined') {
+                    throw new Error('QRCode library not loaded');
+                }
+                
+                const canvas = document.createElement('canvas');
+                QRCode.toCanvas(canvas, 'test', function(error) {
+                    if (error) {
+                        addResult('QR Code', false, error.message);
+                    } else {
+                        addResult('QR Code', true, 'QR Code generated successfully');
+                        document.body.appendChild(canvas);
+                        setTimeout(() => {
+                            if (canvas.parentNode) {
+                                document.body.removeChild(canvas);
+                            }
+                        }, 2000);
+                    }
+                });
+            } catch (error) {
+                addResult('QR Code', false, error.message);
+            }
+        }
+        
+        // Run library check on load
+        window.addEventListener('load', function() {
+            setTimeout(checkLibraries, 1000);
+        });
+    </script>
+</body>
+</html>

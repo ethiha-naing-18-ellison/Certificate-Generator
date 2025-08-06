@@ -188,21 +188,26 @@ function handleSigneeInput(e) {
     
     if (field.includes('signee1-name')) {
         certificateData.signeeNames.signee1 = value;
-        document.getElementById('display-signee1-name').textContent = value;
+        const displayElement = document.getElementById('display-signee1-name');
+        if (displayElement) {
+            displayElement.textContent = value;
+        }
         toggleSignatureDisplay('signature1', value || certificateData.signeeTitles.signee1);
     } else if (field.includes('signee1-title')) {
         certificateData.signeeTitles.signee1 = value;
-        document.getElementById('display-signee1-title').textContent = value;
+        const displayElement = document.getElementById('display-signee1-title');
+        if (displayElement) {
+            displayElement.textContent = value;
+        }
         toggleSignatureDisplay('signature1', certificateData.signeeNames.signee1 || value);
     }
 }
 
 function toggleSignatureDisplay(signatureId, hasContent) {
     const display = document.getElementById(`${signatureId}-display`);
-    if (hasContent) {
+    if (display && (hasContent || certificateData.signatures[signatureId])) {
         display.style.display = 'block';
-    } else if (!certificateData.signatures[signatureId]) {
-        display.style.display = 'none';
+        console.log(`Showing ${signatureId} display`);
     }
 }
 
@@ -256,39 +261,43 @@ function updateLogoDisplay(logoType, imageData) {
 function updateSignatureDisplay(signatureType, imageData) {
     const display = document.getElementById(`${signatureType}-display`);
     if (display) {
+        console.log(`Updating ${signatureType} display with image data`);
         const signatureLine = display.querySelector('.signature-line');
         if (signatureLine) {
             signatureLine.innerHTML = `<img src="${imageData}" alt="Signature">`;
+        } else {
+            console.error(`Signature line not found for ${signatureType}`);
         }
         
-        // Show signature if there's content
-        const signatureNumber = signatureType.replace('signature', '');
-        const signeeKey = `signee${signatureNumber}`;
-        const hasName = certificateData.signeeNames[signeeKey];
-        const hasTitle = certificateData.signeeTitles[signeeKey];
-        
-        if (hasName || hasTitle || imageData) {
-            display.style.display = 'block';
-        }
+        // Always show signature display when there's image data
+        display.style.display = 'block';
         
         // Update control panel preview
         const controlPreview = document.getElementById(`${signatureType}-preview`);
         if (controlPreview) {
             controlPreview.innerHTML = `<img src="${imageData}" alt="Signature preview">`;
         }
+    } else {
+        console.error(`Signature display element not found: ${signatureType}-display`);
     }
 }
 
 function updateStampDisplay(imageData) {
     const display = document.getElementById('stamp-display');
-    display.innerHTML = `<img src="${imageData}" alt="Stamp">`;
-    display.style.display = 'block';
+    if (display) {
+        console.log('Updating stamp display with image data');
+        display.innerHTML = `<img src="${imageData}" alt="Stamp">`;
+        display.style.display = 'block';
+    } else {
+        console.error('Stamp display element not found');
+    }
 }
 
 // ===== QR CODE HANDLERS =====
 function handleQRToggle(e) {
     const enabled = e.target.checked;
     certificateData.qrEnabled = enabled;
+    console.log('QR toggle:', enabled);
     
     const options = document.getElementById('qr-options');
     options.style.display = enabled ? 'block' : 'none';
@@ -296,14 +305,16 @@ function handleQRToggle(e) {
     if (enabled && certificateData.qrUrl) {
         generateQRCode(certificateData.qrUrl);
     } else {
-        document.getElementById('qr-display').innerHTML = '';
-        document.getElementById('qr-display').style.display = 'none';
+        const qrDisplay = document.getElementById('qr-display');
+        qrDisplay.innerHTML = '';
+        qrDisplay.style.display = 'none';
     }
 }
 
 function handleQRInput(e) {
     const url = e.target.value;
     certificateData.qrUrl = url;
+    console.log('QR URL input:', url, 'Enabled:', certificateData.qrEnabled);
     
     if (certificateData.qrEnabled && url) {
         generateQRCode(url);
@@ -312,20 +323,31 @@ function handleQRInput(e) {
 
 function generateQRCode(text) {
     const qrDisplay = document.getElementById('qr-display');
+    if (!qrDisplay) {
+        console.error('QR display element not found');
+        return;
+    }
+    
+    console.log('Generating QR code for:', text);
     qrDisplay.innerHTML = '';
     
     if (text && typeof QRCode !== 'undefined') {
         QRCode.toCanvas(text, { width: 80, height: 80 }, function(error, canvas) {
             if (error) {
                 console.error('QR Code generation failed:', error);
+                // Fallback to text display
+                qrDisplay.innerHTML = '<div style="border: 2px solid #000; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 10px; background: #fff;">QR Code</div>';
+                qrDisplay.style.display = 'block';
                 return;
             }
             qrDisplay.appendChild(canvas);
             qrDisplay.style.display = 'block';
+            console.log('QR code displayed successfully');
         });
     } else if (text) {
         // Fallback if QRCode library not loaded
-        qrDisplay.innerHTML = '<div style="border: 1px solid #000; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 10px;">QR Code</div>';
+        console.log('QRCode library not loaded, using fallback');
+        qrDisplay.innerHTML = '<div style="border: 2px solid #000; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 10px; background: #fff;">QR Code</div>';
         qrDisplay.style.display = 'block';
     } else {
         qrDisplay.style.display = 'none';
@@ -977,14 +999,14 @@ function handleDynamicSigneeInput(event, signatureNumber, type) {
         }
     }
     
-    // Show/hide signature display based on content
+    // Always show signature display if there's any content
     const hasName = certificateData.signeeNames[signeeId];
     const hasTitle = certificateData.signeeTitles[signeeId];
     const hasSignature = certificateData.signatures[signatureId];
     
     const display = document.getElementById(`${signatureId}-display`);
-    if (display) {
-        display.style.display = (hasName || hasTitle || hasSignature) ? 'block' : 'none';
+    if (display && (hasName || hasTitle || hasSignature)) {
+        display.style.display = 'block';
     }
 }
 
