@@ -1,0 +1,1032 @@
+/* ===== CSS RESET & BASE STYLES ===== */
+* {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+}
+
+:root {
+    /* Default Theme Variables */
+    --primary-color: #d4af37;
+    --secondary-color: #000000;
+    --accent-color: #f8f8f8;
+    --text-color: #333333;
+    --background-color: #ffffff;
+    --border-color: #e0e0e0;
+    --shadow-color: rgba(0, 0, 0, 0.1);
+    
+    /* Font Variables */
+    --title-font: 'Merriweather', serif;
+    --body-font: 'Poppins', sans-serif;
+    --accent-font: 'Dancing Script', cursive;
+    
+    /* Spacing */
+    --spacing-xs: 0.5rem;
+    --spacing-sm: 1rem;
+    --spacing-md: 1.5rem;
+    --spacing-lg: 2rem;
+    --spacing-xl: 3rem;
+    
+    /* Breakpoints */
+    --mobile: 768px;
+    --tablet: 1024px;
+    --desktop: 1200px;
+}
+
+body {
+    font-family: var(--body-font);
+    color: var(--text-color);
+    background-color: #f5f5f5;
+    line-height: 1.6;
+}
+
+.container {
+    max-width: var(--desktop);
+    margin: 0 auto;
+    padding: 0 var(--spacing-sm);
+}
+
+/* ===== HEADER ===== */
+.header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: var(--spacing-lg) 0;
+    text-align: center;
+    box-shadow: 0 4px 20px var(--shadow-color);
+}
+
+.header h1 {
+    font-size: 2.5rem;
+    font-weight: 700;
+    margin-bottom: var(--spacing-xs);
+}
+
+.header p {
+    font-size: 1.1rem;
+    opacity: 0.9;
+}
+
+.header i {
+    margin-right: var(--spacing-xs);
+}
+
+/* ===== MAIN APPLICATION LAYOUT ===== */
+.main-app {
+    padding: var(--spacing-lg) 0;
+}
+
+.app-grid {
+    display: grid;
+    grid-template-columns: 1fr 2fr;
+    gap: var(--spacing-lg);
+    min-height: 80vh;
+}
+
+@media (max-width: 1024px) {
+    .app-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+}
+
+/* ===== CONTROL PANEL ===== */
+.control-panel {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px var(--shadow-color);
+    overflow: hidden;
+    height: fit-content;
+}
+
+.panel-header {
+    background: var(--primary-color);
+    color: white;
+    padding: var(--spacing-md);
+    text-align: center;
+}
+
+.panel-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.panel-content {
+    padding: var(--spacing-md);
+    max-height: 80vh;
+    overflow-y: auto;
+}
+
+.form-section {
+    margin-bottom: var(--spacing-lg);
+    padding-bottom: var(--spacing-md);
+    border-bottom: 1px solid var(--border-color);
+}
+
+.form-section:last-child {
+    border-bottom: none;
+    margin-bottom: 0;
+}
+
+.form-section h3 {
+    color: var(--primary-color);
+    font-size: 1.2rem;
+    margin-bottom: var(--spacing-md);
+    font-weight: 600;
+}
+
+.form-section h3 i {
+    margin-right: var(--spacing-xs);
+}
+
+.form-group {
+    margin-bottom: var(--spacing-md);
+}
+
+.form-group label {
+    display: block;
+    margin-bottom: var(--spacing-xs);
+    font-weight: 500;
+    color: var(--text-color);
+}
+
+.form-control {
+    width: 100%;
+    padding: var(--spacing-xs) var(--spacing-sm);
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    font-size: 1rem;
+    font-family: var(--body-font);
+    transition: all 0.3s ease;
+}
+
+.form-control:focus {
+    outline: none;
+    border-color: var(--primary-color);
+    box-shadow: 0 0 0 3px rgba(212, 175, 55, 0.1);
+}
+
+textarea.form-control {
+    resize: vertical;
+    min-height: 80px;
+}
+
+/* ===== FILE UPLOADS ===== */
+.logo-uploads {
+    display: grid;
+    gap: var(--spacing-sm);
+}
+
+.upload-item {
+    border: 2px dashed var(--border-color);
+    border-radius: 8px;
+    padding: var(--spacing-sm);
+    text-align: center;
+    transition: all 0.3s ease;
+}
+
+.upload-item:hover {
+    border-color: var(--primary-color);
+    background-color: rgba(212, 175, 55, 0.05);
+}
+
+.file-input {
+    display: none;
+}
+
+.file-input + label {
+    display: inline-block;
+    padding: var(--spacing-xs) var(--spacing-md);
+    background: var(--primary-color);
+    color: white;
+    border-radius: 6px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+}
+
+.file-input + label:hover {
+    background: #b8941f;
+}
+
+.file-preview {
+    margin-top: var(--spacing-xs);
+    min-height: 60px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: #f9f9f9;
+    border-radius: 6px;
+}
+
+.file-preview img {
+    max-width: 100%;
+    max-height: 60px;
+    object-fit: contain;
+}
+
+/* ===== SIGNATURES ===== */
+.signature-section {
+    display: grid;
+    gap: var(--spacing-md);
+}
+
+.signature-item {
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: var(--spacing-md);
+    background: #fafafa;
+}
+
+.signature-item h4 {
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-sm);
+    font-size: 1.1rem;
+}
+
+.signature-options {
+    display: flex;
+    gap: var(--spacing-xs);
+    margin: var(--spacing-sm) 0;
+}
+
+.signature-preview {
+    margin-top: var(--spacing-sm);
+    min-height: 80px;
+    border: 1px dashed var(--border-color);
+    border-radius: 6px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    background: white;
+}
+
+.signature-preview img {
+    max-width: 100%;
+    max-height: 80px;
+    object-fit: contain;
+}
+
+/* ===== QR CODE OPTIONS ===== */
+.checkbox-label {
+    display: flex;
+    align-items: center;
+    cursor: pointer;
+    font-weight: 500;
+}
+
+.checkbox-label input[type="checkbox"] {
+    margin-right: var(--spacing-xs);
+    transform: scale(1.2);
+}
+
+.qr-options {
+    margin-top: var(--spacing-sm);
+    padding: var(--spacing-sm);
+    background: #f9f9f9;
+    border-radius: 6px;
+}
+
+/* ===== BUTTONS ===== */
+.btn {
+    display: inline-flex;
+    align-items: center;
+    padding: var(--spacing-xs) var(--spacing-md);
+    border: none;
+    border-radius: 6px;
+    font-size: 1rem;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-decoration: none;
+    font-family: var(--body-font);
+}
+
+.btn i {
+    margin-right: var(--spacing-xs);
+}
+
+.btn-primary {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-primary:hover {
+    background: #b8941f;
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(212, 175, 55, 0.3);
+}
+
+.btn-secondary {
+    background: #6c757d;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #5a6268;
+}
+
+.btn-outline {
+    background: transparent;
+    border: 2px solid var(--primary-color);
+    color: var(--primary-color);
+}
+
+.btn-outline:hover {
+    background: var(--primary-color);
+    color: white;
+}
+
+.btn-sm {
+    padding: var(--spacing-xs);
+    font-size: 0.9rem;
+}
+
+.action-buttons {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-sm);
+    margin-top: var(--spacing-md);
+}
+
+.action-buttons .btn-secondary {
+    grid-column: 1 / -1;
+}
+
+/* ===== PREVIEW PANEL ===== */
+.preview-panel {
+    background: white;
+    border-radius: 12px;
+    box-shadow: 0 8px 30px var(--shadow-color);
+    overflow: hidden;
+}
+
+.preview-header {
+    background: var(--secondary-color);
+    color: white;
+    padding: var(--spacing-md);
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.preview-header h2 {
+    font-size: 1.5rem;
+    font-weight: 600;
+}
+
+.preview-controls {
+    display: flex;
+    align-items: center;
+    gap: var(--spacing-sm);
+}
+
+.preview-controls .btn {
+    background: rgba(255, 255, 255, 0.1);
+    color: white;
+    border: 1px solid rgba(255, 255, 255, 0.3);
+}
+
+.preview-controls .btn:hover {
+    background: rgba(255, 255, 255, 0.2);
+}
+
+#zoom-level {
+    font-weight: 500;
+    min-width: 50px;
+    text-align: center;
+}
+
+.preview-container {
+    padding: var(--spacing-lg);
+    background: #f8f9fa;
+    min-height: 600px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    overflow: auto;
+}
+
+/* ===== CERTIFICATE CONTAINER ===== */
+.certificate-container {
+    background: white;
+    box-shadow: 0 10px 40px rgba(0, 0, 0, 0.15);
+    border-radius: 8px;
+    overflow: hidden;
+    transform-origin: center;
+    transition: transform 0.3s ease;
+    max-width: 800px;
+    width: 100%;
+    min-height: 600px;
+}
+
+.certificate-content {
+    padding: var(--spacing-xl);
+    position: relative;
+    height: 100%;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ===== CERTIFICATE LAYOUTS ===== */
+
+/* Classic Centered Layout */
+.layout-classic .certificate-content {
+    text-align: center;
+    justify-content: space-between;
+}
+
+.layout-classic .cert-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-md);
+}
+
+.layout-classic .signatures-container {
+    display: flex;
+    justify-content: space-around;
+    margin-top: var(--spacing-xl);
+}
+
+/* Modern Left-Aligned Layout */
+.layout-modern .certificate-content {
+    text-align: left;
+}
+
+.layout-modern .cert-header {
+    border-bottom: 3px solid var(--primary-color);
+    padding-bottom: var(--spacing-md);
+    margin-bottom: var(--spacing-lg);
+}
+
+.layout-modern .cert-main {
+    flex: 1;
+    padding: var(--spacing-lg) 0;
+}
+
+.layout-modern .signatures-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-lg);
+    margin-top: var(--spacing-xl);
+}
+
+/* Banner Layout */
+.layout-banner .certificate-content {
+    position: relative;
+}
+
+.layout-banner .cert-header {
+    background: linear-gradient(135deg, var(--primary-color), var(--secondary-color));
+    color: white;
+    padding: var(--spacing-lg);
+    margin: calc(-1 * var(--spacing-xl)) calc(-1 * var(--spacing-xl)) var(--spacing-lg);
+    text-align: center;
+}
+
+.layout-banner .cert-main {
+    text-align: center;
+    flex: 1;
+    padding: var(--spacing-lg) 0;
+}
+
+.layout-banner .cert-footer {
+    position: relative;
+    margin-top: var(--spacing-xl);
+}
+
+/* Dual Signatures Layout */
+.layout-dual .certificate-content {
+    text-align: center;
+}
+
+.layout-dual .cert-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-lg);
+}
+
+.layout-dual .signatures-container {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-xl);
+    padding-top: var(--spacing-lg);
+    border-top: 2px solid var(--primary-color);
+}
+
+/* Minimal Glassmorphic Layout */
+.layout-minimal .certificate-content {
+    background: rgba(255, 255, 255, 0.1);
+    backdrop-filter: blur(10px);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    text-align: center;
+    position: relative;
+}
+
+.layout-minimal .cert-main {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: var(--spacing-md);
+    padding: var(--spacing-xl);
+}
+
+.layout-minimal .signatures-container {
+    display: flex;
+    justify-content: center;
+    gap: var(--spacing-xl);
+    margin-top: var(--spacing-lg);
+}
+
+/* ===== CERTIFICATE ELEMENTS ===== */
+.cert-title {
+    font-family: var(--title-font);
+    font-size: 2.5rem;
+    font-weight: 700;
+    color: var(--primary-color);
+    margin-bottom: var(--spacing-md);
+    text-transform: uppercase;
+    letter-spacing: 2px;
+}
+
+.cert-subheading {
+    font-size: 1.2rem;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-sm);
+    font-style: italic;
+}
+
+.recipient-name {
+    font-family: var(--accent-font);
+    font-size: 3rem;
+    font-weight: 600;
+    color: var(--secondary-color);
+    margin: var(--spacing-lg) 0;
+    border-bottom: 2px solid var(--primary-color);
+    padding-bottom: var(--spacing-sm);
+    display: inline-block;
+}
+
+.cert-body {
+    font-size: 1.1rem;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-md);
+    line-height: 1.6;
+}
+
+.course-name {
+    font-family: var(--title-font);
+    font-size: 1.8rem;
+    font-weight: 600;
+    color: var(--primary-color);
+    margin: var(--spacing-md) 0;
+}
+
+.cert-date {
+    font-size: 1rem;
+    color: var(--text-color);
+    font-weight: 500;
+}
+
+/* ===== LOGOS ===== */
+.logos-container {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: var(--spacing-lg);
+}
+
+.logo-display {
+    max-width: 120px;
+    max-height: 80px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.logo-display img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* ===== SIGNATURES ===== */
+.signatures-container {
+    display: flex;
+    gap: var(--spacing-xl);
+}
+
+.signature-display {
+    flex: 1;
+    text-align: center;
+}
+
+.signature-line {
+    height: 80px;
+    border-bottom: 2px solid var(--text-color);
+    margin-bottom: var(--spacing-sm);
+    display: flex;
+    align-items: flex-end;
+    justify-content: center;
+    position: relative;
+}
+
+.signature-line img {
+    max-width: 100%;
+    max-height: 70px;
+    object-fit: contain;
+    position: absolute;
+    bottom: 10px;
+}
+
+.signature-info {
+    text-align: center;
+}
+
+.signee-name {
+    font-weight: 600;
+    font-size: 1rem;
+    color: var(--text-color);
+    margin-bottom: var(--spacing-xs);
+}
+
+.signee-title {
+    font-size: 0.9rem;
+    color: var(--text-color);
+    opacity: 0.8;
+}
+
+/* ===== STAMP AND QR ===== */
+.cert-footer {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex-end;
+    margin-top: var(--spacing-xl);
+}
+
+.stamp-display {
+    max-width: 100px;
+    max-height: 100px;
+}
+
+.stamp-display img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+.qr-display {
+    max-width: 80px;
+    max-height: 80px;
+}
+
+.qr-display img {
+    max-width: 100%;
+    max-height: 100%;
+    object-fit: contain;
+}
+
+/* ===== COLOR THEMES ===== */
+
+/* Gold Theme (Default) */
+.theme-gold {
+    --primary-color: #d4af37;
+    --secondary-color: #000000;
+    --accent-color: #f8f8f8;
+    --text-color: #333333;
+    --background-color: #ffffff;
+}
+
+/* Blue Theme */
+.theme-blue {
+    --primary-color: #1e40af;
+    --secondary-color: #3b82f6;
+    --accent-color: #dbeafe;
+    --text-color: #1e293b;
+    --background-color: #ffffff;
+}
+
+/* Purple Theme */
+.theme-purple {
+    --primary-color: #7c3aed;
+    --secondary-color: #6b7280;
+    --accent-color: #f3f4f6;
+    --text-color: #374151;
+    --background-color: #ffffff;
+}
+
+/* Teal Theme */
+.theme-teal {
+    --primary-color: #0d9488;
+    --secondary-color: #1f2937;
+    --accent-color: #f0fdfa;
+    --text-color: #065f46;
+    --background-color: #ffffff;
+}
+
+/* Clean White Theme */
+.theme-clean {
+    --primary-color: #374151;
+    --secondary-color: #6b7280;
+    --accent-color: #f9fafb;
+    --text-color: #111827;
+    --background-color: #ffffff;
+}
+
+/* ===== FONT FAMILIES ===== */
+.font-serif {
+    --title-font: 'Merriweather', serif;
+    --body-font: 'Merriweather', serif;
+    --accent-font: 'Merriweather', serif;
+}
+
+.font-sans {
+    --title-font: 'Poppins', sans-serif;
+    --body-font: 'Poppins', sans-serif;
+    --accent-font: 'Poppins', sans-serif;
+}
+
+.font-handwritten {
+    --title-font: 'Dancing Script', cursive;
+    --body-font: 'Poppins', sans-serif;
+    --accent-font: 'Dancing Script', cursive;
+}
+
+.font-mono {
+    --title-font: 'Roboto Mono', monospace;
+    --body-font: 'Roboto Mono', monospace;
+    --accent-font: 'Roboto Mono', monospace;
+}
+
+.font-display {
+    --title-font: 'Playfair Display', serif;
+    --body-font: 'Poppins', sans-serif;
+    --accent-font: 'Playfair Display', serif;
+}
+
+/* ===== MODAL STYLES ===== */
+.modal {
+    display: none;
+    position: fixed;
+    z-index: 1000;
+    left: 0;
+    top: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(5px);
+}
+
+.modal-content {
+    background-color: white;
+    margin: 5% auto;
+    padding: 0;
+    border-radius: 12px;
+    width: 90%;
+    max-width: 500px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+}
+
+.modal-header {
+    background: var(--primary-color);
+    color: white;
+    padding: var(--spacing-md);
+    border-radius: 12px 12px 0 0;
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+}
+
+.modal-header h3 {
+    margin: 0;
+    font-size: 1.3rem;
+}
+
+.close-btn {
+    background: none;
+    border: none;
+    color: white;
+    font-size: 1.5rem;
+    cursor: pointer;
+    padding: var(--spacing-xs);
+    border-radius: 4px;
+    transition: background-color 0.3s ease;
+}
+
+.close-btn:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+.modal-body {
+    padding: var(--spacing-lg);
+    text-align: center;
+}
+
+#signature-canvas {
+    border: 2px solid var(--border-color);
+    border-radius: 8px;
+    margin-bottom: var(--spacing-md);
+    cursor: crosshair;
+}
+
+.signature-controls {
+    display: flex;
+    gap: var(--spacing-md);
+    justify-content: center;
+}
+
+/* ===== LOADING OVERLAY ===== */
+.loading-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background: rgba(0, 0, 0, 0.8);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 2000;
+    backdrop-filter: blur(5px);
+}
+
+.loading-content {
+    text-align: center;
+    color: white;
+}
+
+.spinner {
+    width: 60px;
+    height: 60px;
+    border: 4px solid rgba(255, 255, 255, 0.3);
+    border-top: 4px solid var(--primary-color);
+    border-radius: 50%;
+    animation: spin 1s linear infinite;
+    margin: 0 auto var(--spacing-md);
+}
+
+@keyframes spin {
+    0% { transform: rotate(0deg); }
+    100% { transform: rotate(360deg); }
+}
+
+.loading-content p {
+    font-size: 1.1rem;
+    font-weight: 500;
+}
+
+/* ===== RESPONSIVE DESIGN ===== */
+@media (max-width: 768px) {
+    .header h1 {
+        font-size: 2rem;
+    }
+    
+    .app-grid {
+        grid-template-columns: 1fr;
+        gap: var(--spacing-md);
+    }
+    
+    .container {
+        padding: 0 var(--spacing-sm);
+    }
+    
+    .action-buttons {
+        grid-template-columns: 1fr;
+    }
+    
+    .cert-title {
+        font-size: 2rem;
+    }
+    
+    .recipient-name {
+        font-size: 2.5rem;
+    }
+    
+    .course-name {
+        font-size: 1.5rem;
+    }
+    
+    .signatures-container {
+        flex-direction: column;
+        gap: var(--spacing-lg);
+    }
+    
+    .modal-content {
+        width: 95%;
+        margin: 10% auto;
+    }
+    
+    #signature-canvas {
+        width: 100%;
+        max-width: 350px;
+    }
+    
+    .signature-controls {
+        flex-direction: column;
+        align-items: center;
+    }
+    
+    .preview-header {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+        text-align: center;
+    }
+    
+    .logos-container {
+        flex-direction: column;
+        gap: var(--spacing-sm);
+    }
+}
+
+@media (max-width: 480px) {
+    .panel-content {
+        padding: var(--spacing-sm);
+    }
+    
+    .certificate-content {
+        padding: var(--spacing-md);
+    }
+    
+    .cert-title {
+        font-size: 1.8rem;
+    }
+    
+    .recipient-name {
+        font-size: 2rem;
+    }
+    
+    .signature-controls {
+        gap: var(--spacing-sm);
+    }
+    
+    .btn {
+        padding: var(--spacing-sm);
+        font-size: 0.9rem;
+    }
+}
+
+/* ===== PRINT STYLES ===== */
+@media print {
+    body * {
+        visibility: hidden;
+    }
+    
+    .certificate-container,
+    .certificate-container * {
+        visibility: visible;
+    }
+    
+    .certificate-container {
+        position: absolute;
+        left: 0;
+        top: 0;
+        width: 100% !important;
+        box-shadow: none;
+        border-radius: 0;
+    }
+    
+    .preview-container {
+        padding: 0;
+        background: white;
+    }
+}
+
+/* ===== UTILITY CLASSES ===== */
+.hidden {
+    display: none !important;
+}
+
+.visible {
+    display: block !important;
+}
+
+.text-center {
+    text-align: center;
+}
+
+.text-left {
+    text-align: left;
+}
+
+.text-right {
+    text-align: right;
+}
+
+.mt-1 { margin-top: var(--spacing-xs); }
+.mt-2 { margin-top: var(--spacing-sm); }
+.mt-3 { margin-top: var(--spacing-md); }
+.mt-4 { margin-top: var(--spacing-lg); }
+
+.mb-1 { margin-bottom: var(--spacing-xs); }
+.mb-2 { margin-bottom: var(--spacing-sm); }
+.mb-3 { margin-bottom: var(--spacing-md); }
+.mb-4 { margin-bottom: var(--spacing-lg); }
+
+.p-1 { padding: var(--spacing-xs); }
+.p-2 { padding: var(--spacing-sm); }
+.p-3 { padding: var(--spacing-md); }
+.p-4 { padding: var(--spacing-lg); }
