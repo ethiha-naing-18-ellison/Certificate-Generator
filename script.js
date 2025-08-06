@@ -40,6 +40,9 @@ document.addEventListener('DOMContentLoaded', function() {
 function initializeApp() {
     console.log('Advanced Certificate Generator initialized');
     
+    // Check if required libraries are loaded
+    checkLibraries();
+    
     // Apply default theme and layout
     applyTheme('gold');
     applyLayout('classic');
@@ -47,6 +50,25 @@ function initializeApp() {
     
     // Initialize signature canvas
     initializeSignatureCanvas();
+}
+
+function checkLibraries() {
+    const libraries = [
+        { name: 'html2canvas', loaded: typeof html2canvas !== 'undefined' },
+        { name: 'jsPDF', loaded: typeof window.jspdf !== 'undefined' },
+        { name: 'QRCode', loaded: typeof QRCode !== 'undefined' },
+        { name: 'SignaturePad', loaded: typeof SignaturePad !== 'undefined' }
+    ];
+    
+    libraries.forEach(lib => {
+        if (lib.loaded) {
+            console.log(`✅ ${lib.name} library loaded successfully`);
+        } else {
+            console.error(`❌ ${lib.name} library failed to load`);
+        }
+    });
+    
+    return libraries.every(lib => lib.loaded);
 }
 
 // ===== EVENT LISTENERS =====
@@ -67,15 +89,10 @@ function setupEventListeners() {
     // Signature inputs
     document.getElementById('signee1-name').addEventListener('input', handleSigneeInput);
     document.getElementById('signee1-title').addEventListener('input', handleSigneeInput);
-    document.getElementById('signee2-name').addEventListener('input', handleSigneeInput);
-    document.getElementById('signee2-title').addEventListener('input', handleSigneeInput);
     
     // File uploads
     document.getElementById('logo1').addEventListener('change', (e) => handleFileUpload(e, 'logo1'));
-    document.getElementById('logo2').addEventListener('change', (e) => handleFileUpload(e, 'logo2'));
-    document.getElementById('logo3').addEventListener('change', (e) => handleFileUpload(e, 'logo3'));
     document.getElementById('signature1').addEventListener('change', (e) => handleFileUpload(e, 'signature1'));
-    document.getElementById('signature2').addEventListener('change', (e) => handleFileUpload(e, 'signature2'));
     document.getElementById('stamp').addEventListener('change', (e) => handleFileUpload(e, 'stamp'));
     
     // QR Code
@@ -223,32 +240,43 @@ function handleFileUpload(event, type) {
 
 function updateFilePreview(type, imageData) {
     const preview = document.getElementById(`${type}-preview`);
-    preview.innerHTML = `<img src="${imageData}" alt="${type} preview">`;
+    if (preview) {
+        preview.innerHTML = `<img src="${imageData}" alt="${type} preview">`;
+    }
 }
 
 function updateLogoDisplay(logoType, imageData) {
     const display = document.getElementById(`${logoType}-display`);
-    display.innerHTML = `<img src="${imageData}" alt="Logo">`;
-    display.style.display = 'block';
+    if (display) {
+        display.innerHTML = `<img src="${imageData}" alt="Logo">`;
+        display.style.display = 'block';
+    }
 }
 
 function updateSignatureDisplay(signatureType, imageData) {
     const display = document.getElementById(`${signatureType}-display`);
-    const signatureLine = display.querySelector('.signature-line');
-    signatureLine.innerHTML = `<img src="${imageData}" alt="Signature">`;
-    
-    // Show signature if there's content
-    const signatureNumber = signatureType.replace('signature', '');
-    const hasName = certificateData[`signee${signatureNumber}Name`];
-    const hasTitle = certificateData[`signee${signatureNumber}Title`];
-    
-    if (hasName || hasTitle || imageData) {
-        display.style.display = 'block';
+    if (display) {
+        const signatureLine = display.querySelector('.signature-line');
+        if (signatureLine) {
+            signatureLine.innerHTML = `<img src="${imageData}" alt="Signature">`;
+        }
+        
+        // Show signature if there's content
+        const signatureNumber = signatureType.replace('signature', '');
+        const signeeKey = `signee${signatureNumber}`;
+        const hasName = certificateData.signeeNames[signeeKey];
+        const hasTitle = certificateData.signeeTitles[signeeKey];
+        
+        if (hasName || hasTitle || imageData) {
+            display.style.display = 'block';
+        }
+        
+        // Update control panel preview
+        const controlPreview = document.getElementById(`${signatureType}-preview`);
+        if (controlPreview) {
+            controlPreview.innerHTML = `<img src="${imageData}" alt="Signature preview">`;
+        }
     }
-    
-    // Update control panel preview
-    const controlPreview = document.getElementById(`${signatureType}-preview`);
-    controlPreview.innerHTML = `<img src="${imageData}" alt="Signature preview">`;
 }
 
 function updateStampDisplay(imageData) {
@@ -286,7 +314,7 @@ function generateQRCode(text) {
     const qrDisplay = document.getElementById('qr-display');
     qrDisplay.innerHTML = '';
     
-    if (text) {
+    if (text && typeof QRCode !== 'undefined') {
         QRCode.toCanvas(text, { width: 80, height: 80 }, function(error, canvas) {
             if (error) {
                 console.error('QR Code generation failed:', error);
@@ -295,6 +323,10 @@ function generateQRCode(text) {
             qrDisplay.appendChild(canvas);
             qrDisplay.style.display = 'block';
         });
+    } else if (text) {
+        // Fallback if QRCode library not loaded
+        qrDisplay.innerHTML = '<div style="border: 1px solid #000; width: 80px; height: 80px; display: flex; align-items: center; justify-content: center; font-size: 10px;">QR Code</div>';
+        qrDisplay.style.display = 'block';
     } else {
         qrDisplay.style.display = 'none';
     }
@@ -302,33 +334,58 @@ function generateQRCode(text) {
 
 // ===== SIGNATURE PAD =====
 function initializeSignatureCanvas() {
-    const canvas = document.getElementById('signature-canvas');
-    signaturePad = new SignaturePad(canvas, {
-        backgroundColor: 'rgba(255, 255, 255, 0)',
-        penColor: 'rgb(0, 0, 0)',
-        minWidth: 2,
-        maxWidth: 4,
-    });
-    
-    // Resize canvas
-    resizeCanvas();
+    try {
+        const canvas = document.getElementById('signature-canvas');
+        if (!canvas) {
+            console.error('Signature canvas not found');
+            return;
+        }
+        
+        if (typeof SignaturePad === 'undefined') {
+            console.error('SignaturePad library not loaded');
+            return;
+        }
+        
+        signaturePad = new SignaturePad(canvas, {
+            backgroundColor: 'rgba(255, 255, 255, 0)',
+            penColor: 'rgb(0, 0, 0)',
+            minWidth: 2,
+            maxWidth: 4,
+        });
+        
+        // Resize canvas
+        resizeCanvas();
+    } catch (error) {
+        console.error('Failed to initialize signature canvas:', error);
+    }
 }
 
 function resizeCanvas() {
-    const canvas = document.getElementById('signature-canvas');
-    const ratio = Math.max(window.devicePixelRatio || 1, 1);
-    
-    canvas.width = canvas.offsetWidth * ratio;
-    canvas.height = canvas.offsetHeight * ratio;
-    canvas.getContext('2d').scale(ratio, ratio);
-    
-    signaturePad.clear();
+    try {
+        const canvas = document.getElementById('signature-canvas');
+        if (!canvas || !signaturePad) return;
+        
+        const ratio = Math.max(window.devicePixelRatio || 1, 1);
+        
+        canvas.width = canvas.offsetWidth * ratio;
+        canvas.height = canvas.offsetHeight * ratio;
+        canvas.getContext('2d').scale(ratio, ratio);
+        
+        signaturePad.clear();
+    } catch (error) {
+        console.error('Failed to resize canvas:', error);
+    }
 }
 
 function openSignaturePad(signatureNumber) {
     currentSignatureTarget = signatureNumber;
     document.getElementById('signature-modal').style.display = 'block';
-    signaturePad.clear();
+    
+    if (signaturePad) {
+        signaturePad.clear();
+    } else {
+        initializeSignatureCanvas();
+    }
     
     // Load existing signature if available
     const existingSignature = certificateData.signatures[`signature${signatureNumber}`];
@@ -343,11 +400,13 @@ function closeSignaturePad() {
 }
 
 function clearSignature() {
-    signaturePad.clear();
+    if (signaturePad) {
+        signaturePad.clear();
+    }
 }
 
 function saveSignature() {
-    if (signaturePad.isEmpty()) {
+    if (!signaturePad || signaturePad.isEmpty()) {
         alert('Please provide a signature first.');
         return;
     }
@@ -379,75 +438,123 @@ function updateCertificatePreview() {
 
 // ===== EXPORT FUNCTIONS =====
 function downloadPDF() {
-    showLoadingOverlay();
-    
-    const element = document.getElementById('certificate-preview');
-    const originalScale = element.style.transform;
-    element.style.transform = 'scale(1)';
-    
-    html2canvas(element, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        width: 1200,
-        height: 800
-    }).then(canvas => {
-        const { jsPDF } = window.jspdf;
-        const pdf = new jsPDF({
-            orientation: 'landscape',
-            unit: 'mm',
-            format: 'a4'
+    try {
+        showLoadingOverlay();
+        
+        const element = document.getElementById('certificate-preview');
+        if (!element) {
+            throw new Error('Certificate preview element not found');
+        }
+        
+        const originalScale = element.style.transform;
+        element.style.transform = 'scale(1)';
+        
+        // Check if libraries are loaded
+        if (typeof html2canvas === 'undefined') {
+            throw new Error('html2canvas library not loaded');
+        }
+        
+        if (typeof window.jspdf === 'undefined') {
+            throw new Error('jsPDF library not loaded');
+        }
+        
+        html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+            allowTaint: true
+        }).then(canvas => {
+            try {
+                const { jsPDF } = window.jspdf;
+                const pdf = new jsPDF({
+                    orientation: 'landscape',
+                    unit: 'mm',
+                    format: 'a4'
+                });
+                
+                const imgData = canvas.toDataURL('image/png');
+                const pdfWidth = pdf.internal.pageSize.getWidth();
+                const pdfHeight = pdf.internal.pageSize.getHeight();
+                
+                pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
+                
+                const filename = generateFilename('pdf');
+                pdf.save(filename);
+                
+                element.style.transform = originalScale;
+                hideLoadingOverlay();
+            } catch (pdfError) {
+                console.error('PDF creation error:', pdfError);
+                alert('Failed to create PDF: ' + pdfError.message);
+                element.style.transform = originalScale;
+                hideLoadingOverlay();
+            }
+        }).catch(error => {
+            console.error('Canvas generation failed:', error);
+            alert('Failed to generate image. Please try again: ' + error.message);
+            element.style.transform = originalScale;
+            hideLoadingOverlay();
         });
-        
-        const imgData = canvas.toDataURL('image/png');
-        const pdfWidth = pdf.internal.pageSize.getWidth();
-        const pdfHeight = pdf.internal.pageSize.getHeight();
-        
-        pdf.addImage(imgData, 'PNG', 0, 0, pdfWidth, pdfHeight);
-        
-        const filename = generateFilename('pdf');
-        pdf.save(filename);
-        
-        element.style.transform = originalScale;
+    } catch (error) {
+        console.error('PDF download error:', error);
+        alert('Download failed: ' + error.message);
         hideLoadingOverlay();
-    }).catch(error => {
-        console.error('PDF generation failed:', error);
-        alert('Failed to generate PDF. Please try again.');
-        element.style.transform = originalScale;
-        hideLoadingOverlay();
-    });
+    }
 }
 
 function downloadPNG() {
-    showLoadingOverlay();
-    
-    const element = document.getElementById('certificate-preview');
-    const originalScale = element.style.transform;
-    element.style.transform = 'scale(1)';
-    
-    html2canvas(element, {
-        scale: 3,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        width: 1200,
-        height: 800
-    }).then(canvas => {
-        const link = document.createElement('a');
-        link.download = generateFilename('png');
-        link.href = canvas.toDataURL('image/png');
+    try {
+        showLoadingOverlay();
         
-        document.body.appendChild(link);
-        link.click();
-        document.body.removeChild(link);
+        const element = document.getElementById('certificate-preview');
+        if (!element) {
+            throw new Error('Certificate preview element not found');
+        }
         
-        element.style.transform = originalScale;
+        const originalScale = element.style.transform;
+        element.style.transform = 'scale(1)';
+        
+        // Check if html2canvas is loaded
+        if (typeof html2canvas === 'undefined') {
+            throw new Error('html2canvas library not loaded');
+        }
+        
+        html2canvas(element, {
+            scale: 2,
+            useCORS: true,
+            backgroundColor: '#ffffff',
+            logging: false,
+            allowTaint: true
+        }).then(canvas => {
+            try {
+                const link = document.createElement('a');
+                link.download = generateFilename('png');
+                link.href = canvas.toDataURL('image/png');
+                
+                document.body.appendChild(link);
+                link.click();
+                document.body.removeChild(link);
+                
+                element.style.transform = originalScale;
+                hideLoadingOverlay();
+            } catch (downloadError) {
+                console.error('PNG download error:', downloadError);
+                alert('Failed to download PNG: ' + downloadError.message);
+                element.style.transform = originalScale;
+                hideLoadingOverlay();
+            }
+        }).catch(error => {
+            console.error('PNG generation failed:', error);
+            alert('Failed to generate PNG: ' + error.message);
+            element.style.transform = originalScale;
+            hideLoadingOverlay();
+        });
+    } catch (error) {
+        console.error('PNG download error:', error);
+        alert('Download failed: ' + error.message);
         hideLoadingOverlay();
-    }).catch(error => {
-        console.error('PNG generation failed:', error);
-        alert('Failed to generate PNG. Please try again.');
-        element.style.transform = originalScale;
-        hideLoadingOverlay();
-    });
+    }
 }
 
 // ===== UTILITY FUNCTIONS =====
