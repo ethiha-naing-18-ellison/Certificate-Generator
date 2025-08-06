@@ -115,30 +115,29 @@
                             <!-- Logos -->
                             <div class="form-group">
                                 <label>Organization Logos</label>
-                                <div class="logo-uploads">
-                                    <div class="upload-item">
+                                <div id="logo-uploads" class="logo-uploads">
+                                    <div class="upload-item dynamic-item" data-logo-id="1">
+                                        <button type="button" class="remove-item-btn" onclick="removeLogo(1)" style="display: none;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
                                         <label for="logo1">Logo 1</label>
                                         <input type="file" id="logo1" accept="image/*" class="file-input">
                                         <div class="file-preview" id="logo1-preview"></div>
                                     </div>
-                                    <div class="upload-item">
-                                        <label for="logo2">Logo 2 (Optional)</label>
-                                        <input type="file" id="logo2" accept="image/*" class="file-input">
-                                        <div class="file-preview" id="logo2-preview"></div>
-                                    </div>
-                                    <div class="upload-item">
-                                        <label for="logo3">Logo 3 (Optional)</label>
-                                        <input type="file" id="logo3" accept="image/*" class="file-input">
-                                        <div class="file-preview" id="logo3-preview"></div>
-                                    </div>
                                 </div>
+                                <button type="button" class="add-more-btn" onclick="addMoreLogo()">
+                                    <i class="fas fa-plus"></i> Add More Logo
+                                </button>
                             </div>
                             
                             <!-- Signatures -->
                             <div class="form-group">
                                 <label>Signatures</label>
-                                <div class="signature-section">
-                                    <div class="signature-item">
+                                <div id="signature-section" class="signature-section">
+                                    <div class="signature-item dynamic-item" data-signature-id="1">
+                                        <button type="button" class="remove-item-btn" onclick="removeSignature(1)" style="display: none;">
+                                            <i class="fas fa-times"></i>
+                                        </button>
                                         <h4>Signature 1</h4>
                                         <input type="text" id="signee1-name" class="form-control" placeholder="Signee Name">
                                         <input type="text" id="signee1-title" class="form-control" placeholder="Title/Position">
@@ -153,23 +152,10 @@
                                         </div>
                                         <div class="signature-preview" id="signature1-preview"></div>
                                     </div>
-                                    
-                                    <div class="signature-item">
-                                        <h4>Signature 2 (Optional)</h4>
-                                        <input type="text" id="signee2-name" class="form-control" placeholder="Signee Name">
-                                        <input type="text" id="signee2-title" class="form-control" placeholder="Title/Position">
-                                        <div class="signature-options">
-                                            <button type="button" class="btn btn-outline" onclick="openSignaturePad(2)">
-                                                <i class="fas fa-pen"></i> Draw Signature
-                                            </button>
-                                            <input type="file" id="signature2" accept="image/*" class="file-input">
-                                            <label for="signature2" class="btn btn-outline">
-                                                <i class="fas fa-upload"></i> Upload
-                                            </label>
-                                        </div>
-                                        <div class="signature-preview" id="signature2-preview"></div>
-                                    </div>
                                 </div>
+                                <button type="button" class="add-more-btn" onclick="addMoreSignature()">
+                                    <i class="fas fa-plus"></i> Add More Signature
+                                </button>
                             </div>
                             
                             <!-- Stamp/Seal -->
@@ -229,10 +215,8 @@
                             <!-- Certificate content will be generated here -->
                             <div class="certificate-content">
                                 <div class="cert-header">
-                                    <div class="logos-container">
+                                    <div id="logos-container" class="logos-container">
                                         <div id="logo1-display" class="logo-display"></div>
-                                        <div id="logo2-display" class="logo-display"></div>
-                                        <div id="logo3-display" class="logo-display"></div>
                                     </div>
                                 </div>
                                 
@@ -246,19 +230,12 @@
                                 </div>
                                 
                                 <div class="cert-footer">
-                                    <div class="signatures-container">
+                                    <div id="signatures-container" class="signatures-container">
                                         <div id="signature1-display" class="signature-display">
                                             <div class="signature-line"></div>
                                             <div class="signature-info">
                                                 <p class="signee-name" id="display-signee1-name"></p>
                                                 <p class="signee-title" id="display-signee1-title"></p>
-                                            </div>
-                                        </div>
-                                        <div id="signature2-display" class="signature-display">
-                                            <div class="signature-line"></div>
-                                            <div class="signature-info">
-                                                <p class="signee-name" id="display-signee2-name"></p>
-                                                <p class="signee-title" id="display-signee2-title"></p>
                                             </div>
                                         </div>
                                     </div>

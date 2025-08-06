@@ -351,6 +351,66 @@ textarea.form-control {
     grid-column: 1 / -1;
 }
 
+/* ===== ADD MORE BUTTONS ===== */
+.add-more-btn {
+    background: var(--primary-color);
+    color: white;
+    border: 2px dashed rgba(212, 175, 55, 0.3);
+    padding: var(--spacing-md);
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.3s ease;
+    text-align: center;
+    margin-top: var(--spacing-sm);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--spacing-xs);
+    font-weight: 500;
+}
+
+.add-more-btn:hover {
+    background: #b8941f;
+    border-color: rgba(184, 148, 31, 0.5);
+    transform: translateY(-2px);
+}
+
+.add-more-btn i {
+    font-size: 1.2em;
+}
+
+.dynamic-item {
+    position: relative;
+    border: 1px solid var(--border-color);
+    border-radius: 8px;
+    padding: var(--spacing-md);
+    margin-bottom: var(--spacing-sm);
+    background: #fafafa;
+}
+
+.remove-item-btn {
+    position: absolute;
+    top: -8px;
+    right: -8px;
+    background: #dc3545;
+    color: white;
+    border: none;
+    border-radius: 50%;
+    width: 24px;
+    height: 24px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    cursor: pointer;
+    font-size: 0.8rem;
+    transition: all 0.3s ease;
+}
+
+.remove-item-btn:hover {
+    background: #c82333;
+    transform: scale(1.1);
+}
+
 /* ===== PREVIEW PANEL ===== */
 .preview-panel {
     background: white;
@@ -413,9 +473,10 @@ textarea.form-control {
     overflow: hidden;
     transform-origin: center;
     transition: transform 0.3s ease;
-    max-width: 800px;
+    max-width: 1200px;
     width: 100%;
-    min-height: 600px;
+    min-height: 800px;
+    aspect-ratio: 16/9; /* Landscape orientation */
 }
 
 .certificate-content {
@@ -595,9 +656,11 @@ textarea.form-control {
 /* ===== LOGOS ===== */
 .logos-container {
     display: flex;
-    justify-content: space-between;
+    justify-content: space-around;
     align-items: center;
     margin-bottom: var(--spacing-lg);
+    flex-wrap: wrap;
+    gap: var(--spacing-md);
 }
 
 .logo-display {
@@ -606,6 +669,7 @@ textarea.form-control {
     display: flex;
     align-items: center;
     justify-content: center;
+    flex: 0 1 auto;
 }
 
 .logo-display img {
@@ -618,11 +682,15 @@ textarea.form-control {
 .signatures-container {
     display: flex;
     gap: var(--spacing-xl);
+    flex-wrap: wrap;
+    justify-content: center;
 }
 
 .signature-display {
     flex: 1;
     text-align: center;
+    min-width: 200px;
+    max-width: 300px;
 }
 
 .signature-line {

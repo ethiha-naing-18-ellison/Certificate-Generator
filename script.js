@@ -2,6 +2,8 @@
 let signaturePad = null;
 let currentSignatureTarget = null;
 let zoomLevel = 100;
+let logoCounter = 1;
+let signatureCounter = 1;
 
 // Certificate data object
 const certificateData = {
@@ -11,12 +13,10 @@ const certificateData = {
     body: 'has successfully completed the course and demonstrated exceptional skills in',
     course: '',
     date: '',
-    signee1Name: '',
-    signee1Title: '',
-    signee2Name: '',
-    signee2Title: '',
-    logos: { logo1: null, logo2: null, logo3: null },
-    signatures: { signature1: null, signature2: null },
+    logos: { logo1: null },
+    signatures: { signature1: null },
+    signeeNames: { signee1: '' },
+    signeeTitles: { signee1: '' },
     stamp: null,
     qrEnabled: false,
     qrUrl: '',
@@ -170,21 +170,13 @@ function handleSigneeInput(e) {
     const value = e.target.value;
     
     if (field.includes('signee1-name')) {
-        certificateData.signee1Name = value;
+        certificateData.signeeNames.signee1 = value;
         document.getElementById('display-signee1-name').textContent = value;
-        toggleSignatureDisplay('signature1', value || certificateData.signee1Title);
+        toggleSignatureDisplay('signature1', value || certificateData.signeeTitles.signee1);
     } else if (field.includes('signee1-title')) {
-        certificateData.signee1Title = value;
+        certificateData.signeeTitles.signee1 = value;
         document.getElementById('display-signee1-title').textContent = value;
-        toggleSignatureDisplay('signature1', certificateData.signee1Name || value);
-    } else if (field.includes('signee2-name')) {
-        certificateData.signee2Name = value;
-        document.getElementById('display-signee2-name').textContent = value;
-        toggleSignatureDisplay('signature2', value || certificateData.signee2Title);
-    } else if (field.includes('signee2-title')) {
-        certificateData.signee2Title = value;
-        document.getElementById('display-signee2-title').textContent = value;
-        toggleSignatureDisplay('signature2', certificateData.signee2Name || value);
+        toggleSignatureDisplay('signature1', certificateData.signeeNames.signee1 || value);
     }
 }
 
@@ -397,8 +389,8 @@ function downloadPDF() {
         scale: 2,
         useCORS: true,
         backgroundColor: '#ffffff',
-        width: 800,
-        height: 600
+        width: 1200,
+        height: 800
     }).then(canvas => {
         const { jsPDF } = window.jspdf;
         const pdf = new jsPDF({
@@ -437,8 +429,8 @@ function downloadPNG() {
         scale: 3,
         useCORS: true,
         backgroundColor: '#ffffff',
-        width: 800,
-        height: 600
+        width: 1200,
+        height: 800
     }).then(canvas => {
         const link = document.createElement('a');
         link.download = generateFilename('png');
@@ -522,6 +514,9 @@ function resetAll() {
     document.getElementById('theme-select').value = 'gold';
     document.getElementById('font-select').value = 'serif';
     
+    // Reset dynamic elements
+    resetDynamicElements();
+    
     // Reset certificate data
     Object.assign(certificateData, {
         title: 'Certificate of Completion',
@@ -530,12 +525,10 @@ function resetAll() {
         body: 'has successfully completed the course and demonstrated exceptional skills in',
         course: '',
         date: formatDate(new Date().toISOString().split('T')[0]),
-        signee1Name: '',
-        signee1Title: '',
-        signee2Name: '',
-        signee2Title: '',
-        logos: { logo1: null, logo2: null, logo3: null },
-        signatures: { signature1: null, signature2: null },
+        logos: { logo1: null },
+        signatures: { signature1: null },
+        signeeNames: { signee1: '' },
+        signeeTitles: { signee1: '' },
         stamp: null,
         qrEnabled: false,
         qrUrl: '',
@@ -558,6 +551,69 @@ function resetAll() {
     document.getElementById('zoom-level').textContent = '100%';
 }
 
+function resetDynamicElements() {
+    // Reset logos to just one
+    const logoUploads = document.getElementById('logo-uploads');
+    logoUploads.innerHTML = `
+        <div class="upload-item dynamic-item" data-logo-id="1">
+            <button type="button" class="remove-item-btn" onclick="removeLogo(1)" style="display: none;">
+                <i class="fas fa-times"></i>
+            </button>
+            <label for="logo1">Logo 1</label>
+            <input type="file" id="logo1" accept="image/*" class="file-input">
+            <div class="file-preview" id="logo1-preview"></div>
+        </div>
+    `;
+    
+    // Reset signatures to just one
+    const signatureSection = document.getElementById('signature-section');
+    signatureSection.innerHTML = `
+        <div class="signature-item dynamic-item" data-signature-id="1">
+            <button type="button" class="remove-item-btn" onclick="removeSignature(1)" style="display: none;">
+                <i class="fas fa-times"></i>
+            </button>
+            <h4>Signature 1</h4>
+            <input type="text" id="signee1-name" class="form-control" placeholder="Signee Name">
+            <input type="text" id="signee1-title" class="form-control" placeholder="Title/Position">
+            <div class="signature-options">
+                <button type="button" class="btn btn-outline" onclick="openSignaturePad(1)">
+                    <i class="fas fa-pen"></i> Draw Signature
+                </button>
+                <input type="file" id="signature1" accept="image/*" class="file-input">
+                <label for="signature1" class="btn btn-outline">
+                    <i class="fas fa-upload"></i> Upload
+                </label>
+            </div>
+            <div class="signature-preview" id="signature1-preview"></div>
+        </div>
+    `;
+    
+    // Reset preview containers
+    const logosContainer = document.getElementById('logos-container');
+    logosContainer.innerHTML = '<div id="logo1-display" class="logo-display"></div>';
+    
+    const signaturesContainer = document.getElementById('signatures-container');
+    signaturesContainer.innerHTML = `
+        <div id="signature1-display" class="signature-display">
+            <div class="signature-line"></div>
+            <div class="signature-info">
+                <p class="signee-name" id="display-signee1-name"></p>
+                <p class="signee-title" id="display-signee1-title"></p>
+            </div>
+        </div>
+    `;
+    
+    // Reset counters
+    logoCounter = 1;
+    signatureCounter = 1;
+    
+    // Re-attach event listeners
+    document.getElementById('logo1').addEventListener('change', (e) => handleFileUpload(e, 'logo1'));
+    document.getElementById('signature1').addEventListener('change', (e) => handleFileUpload(e, 'signature1'));
+    document.getElementById('signee1-name').addEventListener('input', handleSigneeInput);
+    document.getElementById('signee1-title').addEventListener('input', handleSigneeInput);
+}
+
 function resetPreviewDisplays() {
     // Reset text displays
     document.getElementById('display-title').textContent = 'Certificate of Completion';
@@ -570,23 +626,8 @@ function resetPreviewDisplays() {
     // Reset signee displays
     document.getElementById('display-signee1-name').textContent = '';
     document.getElementById('display-signee1-title').textContent = '';
-    document.getElementById('display-signee2-name').textContent = '';
-    document.getElementById('display-signee2-title').textContent = '';
     
-    // Reset image displays
-    ['logo1', 'logo2', 'logo3'].forEach(logo => {
-        const display = document.getElementById(`${logo}-display`);
-        display.innerHTML = '';
-        display.style.display = 'none';
-    });
-    
-    ['signature1', 'signature2'].forEach(sig => {
-        const display = document.getElementById(`${sig}-display`);
-        const signatureLine = display.querySelector('.signature-line');
-        signatureLine.innerHTML = '';
-        display.style.display = 'none';
-    });
-    
+    // Reset stamp and QR displays
     document.getElementById('stamp-display').innerHTML = '';
     document.getElementById('stamp-display').style.display = 'none';
     
@@ -654,5 +695,190 @@ document.addEventListener('keydown', function(e) {
         }, 100);
     }
 });
+
+// ===== DYNAMIC LOGO FUNCTIONS =====
+function addMoreLogo() {
+    logoCounter++;
+    const logoId = `logo${logoCounter}`;
+    const logoUploads = document.getElementById('logo-uploads');
+    
+    const logoItem = document.createElement('div');
+    logoItem.className = 'upload-item dynamic-item';
+    logoItem.setAttribute('data-logo-id', logoCounter);
+    
+    logoItem.innerHTML = `
+        <button type="button" class="remove-item-btn" onclick="removeLogo(${logoCounter})">
+            <i class="fas fa-times"></i>
+        </button>
+        <label for="${logoId}">Logo ${logoCounter}</label>
+        <input type="file" id="${logoId}" accept="image/*" class="file-input">
+        <div class="file-preview" id="${logoId}-preview"></div>
+    `;
+    
+    logoUploads.appendChild(logoItem);
+    
+    // Add event listener for the new file input
+    document.getElementById(logoId).addEventListener('change', (e) => handleFileUpload(e, logoId));
+    
+    // Initialize logo data
+    certificateData.logos[logoId] = null;
+    
+    // Create preview display element
+    const logosContainer = document.getElementById('logos-container');
+    const logoDisplay = document.createElement('div');
+    logoDisplay.id = `${logoId}-display`;
+    logoDisplay.className = 'logo-display';
+    logoDisplay.style.display = 'none';
+    logosContainer.appendChild(logoDisplay);
+    
+    // Show remove button for all logos when there are multiple
+    updateRemoveButtonsVisibility('logo');
+}
+
+function removeLogo(logoId) {
+    // Remove from DOM
+    const logoItem = document.querySelector(`[data-logo-id="${logoId}"]`);
+    if (logoItem) {
+        logoItem.remove();
+    }
+    
+    // Remove from preview
+    const logoDisplay = document.getElementById(`logo${logoId}-display`);
+    if (logoDisplay) {
+        logoDisplay.remove();
+    }
+    
+    // Remove from data
+    delete certificateData.logos[`logo${logoId}`];
+    
+    // Update remove buttons visibility
+    updateRemoveButtonsVisibility('logo');
+}
+
+// ===== DYNAMIC SIGNATURE FUNCTIONS =====
+function addMoreSignature() {
+    signatureCounter++;
+    const signatureId = `signature${signatureCounter}`;
+    const signeeId = `signee${signatureCounter}`;
+    const signatureSection = document.getElementById('signature-section');
+    
+    const signatureItem = document.createElement('div');
+    signatureItem.className = 'signature-item dynamic-item';
+    signatureItem.setAttribute('data-signature-id', signatureCounter);
+    
+    signatureItem.innerHTML = `
+        <button type="button" class="remove-item-btn" onclick="removeSignature(${signatureCounter})">
+            <i class="fas fa-times"></i>
+        </button>
+        <h4>Signature ${signatureCounter}</h4>
+        <input type="text" id="${signeeId}-name" class="form-control" placeholder="Signee Name">
+        <input type="text" id="${signeeId}-title" class="form-control" placeholder="Title/Position">
+        <div class="signature-options">
+            <button type="button" class="btn btn-outline" onclick="openSignaturePad(${signatureCounter})">
+                <i class="fas fa-pen"></i> Draw Signature
+            </button>
+            <input type="file" id="${signatureId}" accept="image/*" class="file-input">
+            <label for="${signatureId}" class="btn btn-outline">
+                <i class="fas fa-upload"></i> Upload
+            </label>
+        </div>
+        <div class="signature-preview" id="${signatureId}-preview"></div>
+    `;
+    
+    signatureSection.appendChild(signatureItem);
+    
+    // Add event listeners for the new elements
+    document.getElementById(`${signeeId}-name`).addEventListener('input', (e) => handleDynamicSigneeInput(e, signatureCounter, 'name'));
+    document.getElementById(`${signeeId}-title`).addEventListener('input', (e) => handleDynamicSigneeInput(e, signatureCounter, 'title'));
+    document.getElementById(signatureId).addEventListener('change', (e) => handleFileUpload(e, signatureId));
+    
+    // Initialize signature data
+    certificateData.signatures[signatureId] = null;
+    certificateData.signeeNames[signeeId] = '';
+    certificateData.signeeTitles[signeeId] = '';
+    
+    // Create preview display element
+    const signaturesContainer = document.getElementById('signatures-container');
+    const signatureDisplay = document.createElement('div');
+    signatureDisplay.id = `${signatureId}-display`;
+    signatureDisplay.className = 'signature-display';
+    signatureDisplay.style.display = 'none';
+    signatureDisplay.innerHTML = `
+        <div class="signature-line"></div>
+        <div class="signature-info">
+            <p class="signee-name" id="display-${signeeId}-name"></p>
+            <p class="signee-title" id="display-${signeeId}-title"></p>
+        </div>
+    `;
+    signaturesContainer.appendChild(signatureDisplay);
+    
+    // Show remove button for all signatures when there are multiple
+    updateRemoveButtonsVisibility('signature');
+}
+
+function removeSignature(signatureId) {
+    // Remove from DOM
+    const signatureItem = document.querySelector(`[data-signature-id="${signatureId}"]`);
+    if (signatureItem) {
+        signatureItem.remove();
+    }
+    
+    // Remove from preview
+    const signatureDisplay = document.getElementById(`signature${signatureId}-display`);
+    if (signatureDisplay) {
+        signatureDisplay.remove();
+    }
+    
+    // Remove from data
+    delete certificateData.signatures[`signature${signatureId}`];
+    delete certificateData.signeeNames[`signee${signatureId}`];
+    delete certificateData.signeeTitles[`signee${signatureId}`];
+    
+    // Update remove buttons visibility
+    updateRemoveButtonsVisibility('signature');
+}
+
+// ===== UTILITY FUNCTIONS FOR DYNAMIC ELEMENTS =====
+function updateRemoveButtonsVisibility(type) {
+    const containerSelector = type === 'logo' ? '#logo-uploads' : '#signature-section';
+    const items = document.querySelectorAll(`${containerSelector} .dynamic-item`);
+    
+    items.forEach((item, index) => {
+        const removeBtn = item.querySelector('.remove-item-btn');
+        if (removeBtn) {
+            removeBtn.style.display = items.length > 1 ? 'flex' : 'none';
+        }
+    });
+}
+
+function handleDynamicSigneeInput(event, signatureNumber, type) {
+    const value = event.target.value;
+    const signeeId = `signee${signatureNumber}`;
+    const signatureId = `signature${signatureNumber}`;
+    
+    if (type === 'name') {
+        certificateData.signeeNames[signeeId] = value;
+        const displayElement = document.getElementById(`display-${signeeId}-name`);
+        if (displayElement) {
+            displayElement.textContent = value;
+        }
+    } else if (type === 'title') {
+        certificateData.signeeTitles[signeeId] = value;
+        const displayElement = document.getElementById(`display-${signeeId}-title`);
+        if (displayElement) {
+            displayElement.textContent = value;
+        }
+    }
+    
+    // Show/hide signature display based on content
+    const hasName = certificateData.signeeNames[signeeId];
+    const hasTitle = certificateData.signeeTitles[signeeId];
+    const hasSignature = certificateData.signatures[signatureId];
+    
+    const display = document.getElementById(`${signatureId}-display`);
+    if (display) {
+        display.style.display = (hasName || hasTitle || hasSignature) ? 'block' : 'none';
+    }
+}
 
 console.log('Advanced Certificate Generator v1.0 - Ready!');
